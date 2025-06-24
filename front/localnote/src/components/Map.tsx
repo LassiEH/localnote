@@ -1,20 +1,45 @@
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import type { LatLngExpression } from 'leaflet';
+import { useEffect, useState } from 'react';
 
 // https://react-leaflet.js.org/
 
 const center: LatLngExpression = [51.505, -0.09];
 
 export function Map() {
+
+    const [userLocation, setUserLocation] = useState<LatLngExpression | null>(null);
+
+    useEffect( () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setUserLocation([ latitude, longitude ]);
+            },
+            (error) => {
+                console.error('Error getting location:', error);
+            }
+        );
+        }
+        else {
+            console.error('Not supported');
+        }
+    }, []);
+    
+
+    if (!userLocation) return <p>Loading map...</p>;
   return (
-    <MapContainer center={center} zoom={13} style={{ height: '50vh', width: '100%' }}>
+    <MapContainer center={userLocation} zoom={13} style={{ height: '50vh', width: '100%' }}>
       <TileLayer
         attribution='&copy; OpenStreetMap contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={center}>
+      {userLocation && (
+        <Marker position={userLocation}>
         <Popup>This is a note</Popup>
       </Marker>
+      )}
     </MapContainer>
   );
 }
