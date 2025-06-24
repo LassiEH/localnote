@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 // https://react-leaflet.js.org/
 
-const center: LatLngExpression = [51.505, -0.09];
+const defaultCenter: LatLngExpression = [51.505, -0.09];
 
 export function Map() {
 
@@ -23,7 +23,9 @@ export function Map() {
         );
         }
         else {
+            // default center just in case
             console.error('Not supported');
+            setUserLocation(defaultCenter)
         }
     }, []);
     
